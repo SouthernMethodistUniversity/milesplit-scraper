@@ -15,7 +15,7 @@ if args.start is None or args.end is None:
     print("❌ Error: You must provide both --start and --end.")
     sys.exit(1)
 
-os.chdir("/users/mlangstonsmith/milesplit-scraper/milesplit-scraper/")
+os.chdir("/users/mlangstonsmith/milesplit-scraper/")
 
 with open("/users/mlangstonsmith/milesplit-scraper/meet_links.pkl", "rb") as f:
     links = pickle.load(f)
