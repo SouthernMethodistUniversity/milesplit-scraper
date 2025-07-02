@@ -1,9 +1,9 @@
 #!/bin/bash
 #SBATCH -A egodat_oit_research_tech_0001
-#SBATCH -D ~/milesplit-scraper/
+#SBATCH -D /users/mlangstonsmith/milesplit-scraper/
 #SBATCH -J get_data_links
-#SBATCH -o ~/milesplit-scraper/debug/output-%j.txt
-#SBATCH -e ~/milesplit-scraper/debug/error-%j.txt
+#SBATCH -o /users/mlangstonsmith/milesplit-scraper/debug/output-%j.txt
+#SBATCH -e /users/mlangstonsmith/milesplit-scraper/debug/error-%j.txt
 #SBATCH -p standard-s
 #SBATCH -t 60
 #SBATCH --mem=5G

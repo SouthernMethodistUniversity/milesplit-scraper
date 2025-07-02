@@ -15,9 +15,9 @@ if args.start is None or args.end is None:
     print("❌ Error: You must provide both --start and --end.")
     sys.exit(1)
 
-os.chdir("~/milesplit-scraper/")
+os.chdir("/users/mlangstonsmith/milesplit-scraper/milesplit-scraper/")
 
-with open("meet_links.pkl", "rb") as f:
+with open("/users/mlangstonsmith/milesplit-scraper/meet_links.pkl", "rb") as f:
     links = pickle.load(f)
 
 args.end = min(len(links)-1, args.end)
@@ -81,7 +81,7 @@ for l in links_subset:
         print("---", "NONE, Setting link to original.")
 
 # === Save to pickle file ===
-output_dir = "data/"
+output_dir = "/users/mlangstonsmith/milesplit-scraper/data/"
 os.makedirs(output_dir, exist_ok=True)
 
 if args.output == None:
