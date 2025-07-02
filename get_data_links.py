@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import pickle
 import argparse
 import os
+import sys
 
 parser = argparse.ArgumentParser(description="Subset the links list.")
 parser.add_argument("--start", type=int, default=0, help="Start index (inclusive)")
@@ -10,8 +11,16 @@ parser.add_argument("--end", type=int, default=0, help="End index (inclusive)")
 parser.add_argument("--output", type=str, default=None, help="Name of .pkl output file")
 args = parser.parse_args()
 
+if args.start is None or args.end is None:
+    print("❌ Error: You must provide both --start and --end.")
+    sys.exit(1)
+
+os.chdir("~/milesplit-scraper/")
+
 with open("meet_links.pkl", "rb") as f:
     links = pickle.load(f)
+
+args.end = min(len(links)-1, args.end)
 
 links_subset = links[args.start:args.end+1]
 
