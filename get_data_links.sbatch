@@ -4,7 +4,7 @@
 #SBATCH -J get_data_links
 #SBATCH -o /users/mlangstonsmith/milesplit-scraper/debug/output-%j.txt
 #SBATCH -e /users/mlangstonsmith/milesplit-scraper/debug/error-%j.txt
-#SBATCH -p standard-s
+#SBATCH -p htc
 #SBATCH -t 60
 #SBATCH --mem=5G
 #SBATCH --array=0-252
@@ -18,4 +18,4 @@ END=$((START + CHUNK_SIZE))
 module load conda
 conda activate milesplit
 
-python get_data_links.py --start $START --end $END
+python /users/mlangstonsmith/milesplit-scraper/get_data_links.py --start $START --end $END
