@@ -7,11 +7,11 @@
 #SBATCH -p htc
 #SBATCH -t 1-00:00:00
 #SBATCH --mem=10G
-#SBATCH --array=0-7
+#SBATCH --array=0-1
 
 mkdir -p debug
 
-CHUNK_SIZE=1000
+CHUNK_SIZE=4000
 START=$((SLURM_ARRAY_TASK_ID * CHUNK_SIZE))
 END=$((START + CHUNK_SIZE))
 

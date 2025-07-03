@@ -81,8 +81,7 @@ for l in links_subset:
     else:
         raw_links[l] = [l]
         print("---", "NONE, Setting link to original.")
-    delay = random.uniform(5, 20)
-    time.sleep(delay)
+    time.sleep(20)
 
 # === Save to pickle file ===
 output_dir = "/users/mlangstonsmith/milesplit-scraper/data/"
