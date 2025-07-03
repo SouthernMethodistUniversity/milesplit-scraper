@@ -5,6 +5,7 @@ import argparse
 import os
 import sys
 import time
+import random
 
 parser = argparse.ArgumentParser(description="Subset the links list.")
 parser.add_argument("--start", type=int, default=0, help="Start index (inclusive)")
@@ -80,7 +81,8 @@ for l in links_subset:
     else:
         raw_links[l] = [l]
         print("---", "NONE, Setting link to original.")
-    time.sleep(10)
+    delay = random.uniform(5, 20)
+    time.sleep(delay)
 
 # === Save to pickle file ===
 output_dir = "/users/mlangstonsmith/milesplit-scraper/data/"
