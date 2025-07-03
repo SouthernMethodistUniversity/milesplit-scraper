@@ -7,7 +7,7 @@
 #SBATCH -p htc
 #SBATCH -t 1-00:00:00
 #SBATCH --mem=10G
-#SBATCH --array=0-8
+#SBATCH --array=0-7
 
 mkdir -p debug
 
