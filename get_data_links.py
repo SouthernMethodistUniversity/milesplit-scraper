@@ -29,6 +29,7 @@ links_subset = links[args.start:args.end+1]
 raw_links = dict()
 
 for l in links_subset:
+    time.sleep(20)
     raw = []
     print(f"Scraping: {l}")
     try:
@@ -81,7 +82,6 @@ for l in links_subset:
     else:
         raw_links[l] = [l]
         print("---", "NONE, Setting link to original.")
-    time.sleep(20)
 
 # === Save to pickle file ===
 output_dir = "/users/mlangstonsmith/milesplit-scraper/data/"
