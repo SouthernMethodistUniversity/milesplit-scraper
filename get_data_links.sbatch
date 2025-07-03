@@ -5,8 +5,8 @@
 #SBATCH -o /users/mlangstonsmith/milesplit-scraper/debug/output-%j.txt
 #SBATCH -e /users/mlangstonsmith/milesplit-scraper/debug/error-%j.txt
 #SBATCH -p htc
-#SBATCH -t 60
-#SBATCH --mem=5G
+#SBATCH -t 1-00:00:00
+#SBATCH --mem=10G
 #SBATCH --array=0-8
 
 mkdir -p debug
