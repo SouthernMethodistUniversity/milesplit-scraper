@@ -46,6 +46,7 @@ for l in links_subset:
     for h in hrefs:
         if h.startswith("https://"):
             try:
+                time.sleep(20)
                 resp = requests.get(h, allow_redirects=True)
                 final_url = resp.url
 
@@ -55,6 +56,7 @@ for l in links_subset:
                 else:
                     # One level deeper: scrape this page too
                     try:
+                        time.sleep(20)
                         soup2 = BeautifulSoup(resp.content, 'html.parser')
                         deeper_links = [a['value'] for a in soup2.select("option") if 'value' in a.attrs]
                         #print(deeper_links)
