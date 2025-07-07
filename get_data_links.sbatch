@@ -13,4 +13,4 @@ mkdir -p debug
 module load conda
 conda activate milesplit
 
-python /users/mlangstonsmith/milesplit-scraper/get_data_links.py --start 0 --end 30
+python /users/mlangstonsmith/milesplit-scraper/get_data_links.py --start 31 --end 90
