@@ -5,7 +5,6 @@ import argparse
 import os
 import sys
 import time
-import random
 
 parser = argparse.ArgumentParser(description="Subset the links list.")
 parser.add_argument("--start", type=int, default=0, help="Start index (inclusive)")
@@ -19,16 +18,17 @@ if args.start is None or args.end is None:
 
 os.chdir("/users/mlangstonsmith/milesplit-scraper/")
 
-with open("/users/mlangstonsmith/milesplit-scraper/meet_links.pkl", "rb") as f:
+with open("meet_links.pkl", "rb") as f:
     links = pickle.load(f)
 
 args.end = min(len(links)-1, args.end)
-
 links_subset = links[args.start:args.end+1]
 
 raw_links = dict()
+start_time = time.time()
+TIME_LIMIT = 23 * 3600  # 23 hours in seconds
 
-for l in links_subset:
+for i, l in enumerate(links_subset):
     time.sleep(10)
     raw = []
     print(f"Scraping: {l}")
@@ -51,51 +51,46 @@ for l in links_subset:
                 final_url = resp.url
 
                 if "raw" in final_url:
-                    #print("---", final_url)
                     raw.append(final_url)
                 else:
-                    # One level deeper: scrape this page too
                     try:
                         soup2 = BeautifulSoup(resp.content, 'html.parser')
                         deeper_links = [a['value'] for a in soup2.select("option") if 'value' in a.attrs]
-                        #print(deeper_links)
-
                         for d in deeper_links:
                             if "milesplit" in d:
-                                #print("- Scraping:", d)
                                 try:
                                     time.sleep(10)
                                     d_resp = requests.get(d, allow_redirects=True)
                                     d_final_url = d_resp.url
-
                                     if "raw" in d_final_url:
-                                        #print("------", d_final_url)
                                         raw.append(d_final_url)
                                 except Exception as e:
                                     print(f"Error in second-level follow {d}: {e}")
                     except Exception as e:
                         print(f"Failed to parse second-level page: {e}")
-
             except Exception as e:
                 print(f"Error following {h}: {e}")
-    if raw:
-        raw_links[l] = list(set(raw))
-        print("---", len(raw_links[l]))
-    else:
-        raw_links[l] = [l]
-        print("---", "NONE, Setting link to original.")
 
-# === Save to pickle file ===
-output_dir = "/users/mlangstonsmith/milesplit-scraper/data/"
+    raw_links[l] = list(set(raw)) if raw else [l]
+    print("---", len(raw_links[l]) if raw else "NONE, Setting link to original.")
+
+    # Check elapsed time
+    elapsed = time.time() - start_time
+    if elapsed > TIME_LIMIT:
+        print("🕒 23-hour time limit reached. Saving progress...")
+        index_completed = args.start + i
+        partial_output = f"data_links_{args.start}_{index_completed}_partial.pkl"
+        with open(f"data/{partial_output}", "wb") as f:
+            pickle.dump(raw_links, f)
+        print(f"✅ Partial save completed to data/{partial_output}")
+        sys.exit(0)
+
+# === Final Save ===
+output_dir = "data/"
 os.makedirs(output_dir, exist_ok=True)
 
-if args.output == None:
-    with open(f"data/data_links_{args.start}_{args.end}.pkl", "wb") as f:
-        pickle.dump(raw_links, f)
+output_path = f"{output_dir}/{args.output}" if args.output else f"{output_dir}/data_links_{args.start}_{args.end}.pkl"
+with open(output_path, "wb") as f:
+    pickle.dump(raw_links, f)
 
-    print(f"\n✅ Saved links to 'data/data_links_{args.start}_{args.end}.pkl'")
-else:
-    with open(f"data/{args.output}", "wb") as f:
-        pickle.dump(raw_links, f)
-
-    print(f"\n✅ Saved links to 'data/{args.output}'")
+print(f"\n✅ Saved links to '{output_path}'")
