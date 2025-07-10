@@ -28,7 +28,10 @@ raw_links = dict()
 start_time = time.time()
 TIME_LIMIT = 23 * 3600  # 23 hours in seconds
 
-for i, l in enumerate(links_subset):
+i = 0
+
+for l in links_subset:
+
     time.sleep(5)
     raw = []
     print(f"Scraping: {l}")
@@ -78,6 +81,7 @@ for i, l in enumerate(links_subset):
     with open(f"data/{partial_output}", "wb") as f:
         pickle.dump(raw_links, f)
     print(f"✅ Partial save completed to data/{partial_output}")
+    i = i + 1
 
 # === Final Save ===
 output_dir = "data/"
