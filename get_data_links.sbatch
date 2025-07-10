@@ -6,11 +6,12 @@
 #SBATCH -e /users/mlangstonsmith/milesplit-scraper/debug/error-%j.txt
 #SBATCH -p htc
 #SBATCH -t 1-00:00:00
-#SBATCH --mem=10G
+#SBATCH --mem=4G
+#SBATCH -c 1
 
 mkdir -p debug
 
 module load conda
 conda activate milesplit
 
-python /users/mlangstonsmith/milesplit-scraper/get_data_links.py --start 401 --end 500
+python /users/mlangstonsmith/milesplit-scraper/get_data_links.py --start $1 --end $2

@@ -29,7 +29,7 @@ start_time = time.time()
 TIME_LIMIT = 23 * 3600  # 23 hours in seconds
 
 for i, l in enumerate(links_subset):
-    time.sleep(10)
+    time.sleep(5)
     raw = []
     print(f"Scraping: {l}")
     try:
@@ -46,7 +46,7 @@ for i, l in enumerate(links_subset):
     for h in hrefs:
         if h.startswith("https://"):
             try:
-                time.sleep(10)
+                time.sleep(5)
                 resp = requests.get(h, allow_redirects=True)
                 final_url = resp.url
 
@@ -59,11 +59,19 @@ for i, l in enumerate(links_subset):
                         for d in deeper_links:
                             if "milesplit" in d:
                                 try:
-                                    time.sleep(10)
+                                    time.sleep(5)
                                     d_resp = requests.get(d, allow_redirects=True)
                                     d_final_url = d_resp.url
                                     if "raw" in d_final_url:
                                         raw.append(d_final_url)
+                                    elapsed = time.time() - start_time
+                                    if elapsed > TIME_LIMIT:
+                                        print("🕒 23-hour time limit reached. Saving progress...")
+                                        index_completed = args.start + i
+                                        partial_output = f"data_links_{args.start}_{index_completed}_partial.pkl"
+                                        with open(f"data/{partial_output}", "wb") as f:
+                                            pickle.dump(raw_links, f)
+                                        print(f"✅ Partial save completed to data/{partial_output}")
                                 except Exception as e:
                                     print(f"Error in second-level follow {d}: {e}")
                     except Exception as e:
@@ -83,7 +91,6 @@ for i, l in enumerate(links_subset):
         with open(f"data/{partial_output}", "wb") as f:
             pickle.dump(raw_links, f)
         print(f"✅ Partial save completed to data/{partial_output}")
-        sys.exit(0)
 
 # === Final Save ===
 output_dir = "data/"
