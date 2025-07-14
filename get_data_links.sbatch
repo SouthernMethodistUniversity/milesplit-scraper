@@ -4,10 +4,11 @@
 #SBATCH -J get_data_links
 #SBATCH -o /users/mlangstonsmith/milesplit-scraper/debug/output-%j.txt
 #SBATCH -e /users/mlangstonsmith/milesplit-scraper/debug/error-%j.txt
-#SBATCH -p htc
+#SBATCH -p batch
 #SBATCH -t 1-00:00:00
 #SBATCH --mem=20G
 #SBATCH -c 1
+#SBATCH -G 1
 
 mkdir -p debug
 

@@ -28,7 +28,9 @@ raw_links = dict()
 start_time = time.time()
 TIME_LIMIT = 23 * 3600  # 23 hours in seconds
 
-for i, l in enumerate(links_subset):
+i = 0
+
+for l in links_subset:
     time.sleep(5)
     raw = []
     print(f"Scraping: {l}")
@@ -75,10 +77,10 @@ for i, l in enumerate(links_subset):
     print("---", len(raw_links[l]) if raw else "NONE, Setting link to original.")
     index_completed = args.start + i
     partial_output = f"data_links_{args.start}_{index_completed}_partial.pkl"
-    with open(f"data/{partial_output}", "wb") as f:
+    with open(f"/lustre/smuexa01/client/users/mlangstonsmith/milesplit_partials/{partial_output}", "wb") as f:
         pickle.dump(raw_links, f)
     print(f"✅ Partial save completed to data/{partial_output}")
-
+    i = i + 1
 # === Final Save ===
 output_dir = "data/"
 os.makedirs(output_dir, exist_ok=True)
