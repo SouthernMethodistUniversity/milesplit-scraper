@@ -46,7 +46,7 @@ for l in links_subset:
     hrefs = [a['href'] for a in tags if 'href' in a.attrs]
 
     for h in hrefs:
-        if h.startswith("https://"):
+        if h.startswith("https://") and "milesplit" in h:
             try:
                 time.sleep(5)
                 resp = requests.get(h, allow_redirects=True)
