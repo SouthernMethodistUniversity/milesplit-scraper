@@ -196,5 +196,6 @@ cython_debug/
 data/
 debug/
 text_files_*/
+data_*/
 
 .DS_Store

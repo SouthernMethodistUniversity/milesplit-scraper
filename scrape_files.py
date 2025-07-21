@@ -26,7 +26,7 @@ def get_file_hash(file_path, algo='sha256'):
 directory = "data/"
 files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
 
-o_dir = "data/text_files/"
+o_dir = "text_files/"
 os.makedirs(o_dir, exist_ok=True)
 
 print(files)
@@ -54,9 +54,8 @@ for file in files:
         i = i + 1
         # == Create directories ==
         kclean = re.sub(r'[^a-zA-Z0-9-]', '_', k)
-        if i < 6:
-            print(k)
-            os.makedirs(f"{o_dir}{kclean}", exist_ok=True)
+        print(k)
+        os.makedirs(f"{o_dir}{kclean}", exist_ok=True)
         for l in tmp_links[k]:
 
             if l not in list(metadata['results_link']):
@@ -78,51 +77,48 @@ for file in files:
                 #if i < 6:
                 #    print("\t", lclean)
 
-                if i < 6:
-                    #print(f"Scraping: {l}")
-                    r = requests.get(l)
-                    soup = BeautifulSoup(r.content, 'html.parser')
-                    tags = soup.select("pre")
-                    print("\t\t", soup.select("h1.meetName")[0].get_text().strip())
-                    print("\t\t", soup.select("div.date time")[0].get_text().strip())
-                    print("\t\t", soup.select("div.venueName")[0].get_text().strip())
-                    print("\t\t", soup.select("div.venueName a")[0].get("href").strip())
-                    print("\t\t", soup.select("div.venueCity")[0].get_text().strip())
+                r = requests.get(l)
+                soup = BeautifulSoup(r.content, 'html.parser')
+                tags = soup.select("pre")
+                print("\t\t", soup.select("h1.meetName")[0].get_text().strip())
+                print("\t\t", soup.select("div.date time")[0].get_text().strip())
+                print("\t\t", soup.select("div.venueName")[0].get_text().strip())
+                print("\t\t", soup.select("div.venueName a")[0].get("href").strip())
+                print("\t\t", soup.select("div.venueCity")[0].get_text().strip())
 
-                    row_data['meet_name'] = soup.select("h1.meetName")[0].get_text().strip()
-                    row_data['meet_date'] = soup.select("div.date time")[0].get_text().strip()
-                    row_data['venue_name'] = soup.select("div.venueName")[0].get_text().strip()
-                    row_data['venue_city'] = soup.select("div.venueCity")[0].get_text().strip()
+                row_data['meet_name'] = soup.select("h1.meetName")[0].get_text().strip()
+                row_data['meet_date'] = soup.select("div.date time")[0].get_text().strip()
+                row_data['venue_name'] = soup.select("div.venueName")[0].get_text().strip()
+                row_data['venue_city'] = soup.select("div.venueCity")[0].get_text().strip()
 
-                    #with open(file, "w", encoding="utf-8") as f:
-                    #    for tag in tags:
-                    #        f.write(tag.get_text())
-                    #        f.write("\n\n")
-                    #hash_value = get_file_hash(file, algo='sha256')
-                    #print("SHA-256:", hash_value)
-                    tag_combo = "\n".join(tag.get_text() for tag in tags)
-                    hash_object = hashlib.md5(tag_combo.encode('utf-8'))
-                    hash_hex = hash_object.hexdigest()
-                    print("MD5:", hash_hex)
-                    row_data['hash'] = hash_hex
-                    if hash_hex in md5s and os.path.exists(f"{o_dir}{kclean}/{hash_hex}.txt"):
-                        print("\n -- Skipping file, already exists")
-                        row_data['is_duplicate'] = True
-                        result = metadata.loc[metadata['hash'] == hash_hex, 'filepath']
-                        if not result.empty:
-                            row_data['filepath'] = result.iloc[0]
-                        else:
-                            row_data['filepath'] = None
+                #with open(file, "w", encoding="utf-8") as f:
+                #    for tag in tags:
+                #        f.write(tag.get_text())
+                #        f.write("\n\n")
+                #hash_value = get_file_hash(file, algo='sha256')
+                #print("SHA-256:", hash_value)
+                tag_combo = "\n".join(tag.get_text() for tag in tags)
+                hash_object = hashlib.md5(tag_combo.encode('utf-8'))
+                hash_hex = hash_object.hexdigest()
+                print("MD5:", hash_hex)
+                row_data['hash'] = hash_hex
+                if hash_hex in md5s and os.path.exists(f"{o_dir}{kclean}/{hash_hex}.txt"):
+                    print("\n -- Skipping file, already exists")
+                    row_data['is_duplicate'] = True
+                    result = metadata.loc[metadata['hash'] == hash_hex, 'filepath']
+                    if not result.empty:
+                        row_data['filepath'] = result.iloc[0]
                     else:
-                        with open(f"{o_dir}{kclean}/{hash_hex}.txt", "w", encoding="utf-8") as f:
-                            f.write(tag_combo)
-                        md5s.append(hash_hex)
-                        print(f"\n✅ NEW FILE CREATED: {o_dir}{kclean}/{hash_hex}.txt")
-                        row_data['is_duplicate'] = False
-                        row_data['filepath'] = f"{o_dir}{kclean}/{hash_hex}.txt"
+                        row_data['filepath'] = None
+                else:
+                    with open(f"{o_dir}{kclean}/{hash_hex}.txt", "w", encoding="utf-8") as f:
+                        f.write(tag_combo)
+                    md5s.append(hash_hex)
+                    print(f"\n✅ NEW FILE CREATED: {o_dir}{kclean}/{hash_hex}.txt")
+                    row_data['is_duplicate'] = False
+                    row_data['filepath'] = f"{o_dir}{kclean}/{hash_hex}.txt"
                 
-                if i < 6:
-                    metadata.loc[len(metadata)] = row_data
+                metadata.loc[len(metadata)] = row_data
                 #else:
                 #print("SKIPPED")
 
