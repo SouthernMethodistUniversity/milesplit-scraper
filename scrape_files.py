@@ -12,6 +12,17 @@ import pickle
 import re
 import os
 import hashlib
+import argparse
+import sys
+
+parser = argparse.ArgumentParser(description="Provide input and output directory")
+parser.add_argument("--input", type=str, help="Input directory path")
+parser.add_argument("--output", type=str, help="Output directory path")
+args = parser.parse_args()
+
+if args.input is None or args.output is None:
+    print("❌ Error: You must provide both --input and --output.")
+    sys.exit(1)
 
 def get_file_hash(file_path, algo='sha256'):
     hasher = hashlib.new(algo)
@@ -23,29 +34,31 @@ def get_file_hash(file_path, algo='sha256'):
 
 # == Setup initial directories and get data files
 
-directory = "data/"
+directory = args.input
+new_directory = re.sub(r'^[^/]+/', '', directory)
 files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
 
-o_dir = "text_files/"
+o_dir = args.output
+new_o_dir = re.sub(r'^[^/]+/', '', o_dir)
 os.makedirs(o_dir, exist_ok=True)
 
 print(files)
 
-if os.path.exists(f"{o_dir}md5s.pkl"):
-    with open(f"{o_dir}md5s.pkl", "rb") as f:
+if os.path.exists(f"{o_dir}/md5s.pkl"):
+    with open(f"{o_dir}/md5s.pkl", "rb") as f:
         md5s = pickle.load(f)
 else:
     md5s = []
 
-if os.path.exists(f"{o_dir}metadata.pkl"):
-    with open(f"{o_dir}metadata.pkl", "rb") as f:
+if os.path.exists(f"{o_dir}/metadata.pkl"):
+    with open(f"{o_dir}/metadata.pkl", "rb") as f:
         metadata = pickle.load(f)
 else:
     columns = ['meet_link', 'results_link', 'meet_name', 'meet_date', 'venue_name', 'venue_link', 'venue_city', 'filepath', 'hash', 'is_duplicate']
     metadata = pd.DataFrame(columns=columns)
 
 for file in files:
-    with open(f"{directory}{file}", "rb") as f:
+    with open(f"{directory}/{file}", "rb") as f:
         tmp_links = pickle.load(f)
 
     i = 0
@@ -55,7 +68,7 @@ for file in files:
         # == Create directories ==
         kclean = re.sub(r'[^a-zA-Z0-9-]', '_', k)
         print(k)
-        os.makedirs(f"{o_dir}{kclean}", exist_ok=True)
+        os.makedirs(f"{o_dir}/{kclean}", exist_ok=True)
         for l in tmp_links[k]:
 
             if l not in list(metadata['results_link']):
@@ -102,7 +115,7 @@ for file in files:
                 hash_hex = hash_object.hexdigest()
                 print("MD5:", hash_hex)
                 row_data['hash'] = hash_hex
-                if hash_hex in md5s and os.path.exists(f"{o_dir}{kclean}/{hash_hex}.txt"):
+                if hash_hex in md5s and os.path.exists(f"{o_dir}/{kclean}/{hash_hex}.txt"):
                     print("\n -- Skipping file, already exists")
                     row_data['is_duplicate'] = True
                     result = metadata.loc[metadata['hash'] == hash_hex, 'filepath']
@@ -111,21 +124,21 @@ for file in files:
                     else:
                         row_data['filepath'] = None
                 else:
-                    with open(f"{o_dir}{kclean}/{hash_hex}.txt", "w", encoding="utf-8") as f:
+                    with open(f"{o_dir}/{kclean}/{hash_hex}.txt", "w", encoding="utf-8") as f:
                         f.write(tag_combo)
                     md5s.append(hash_hex)
-                    print(f"\n✅ NEW FILE CREATED: {o_dir}{kclean}/{hash_hex}.txt")
+                    print(f"\n✅ NEW FILE CREATED: {o_dir}/{kclean}/{hash_hex}.txt")
                     row_data['is_duplicate'] = False
-                    row_data['filepath'] = f"{o_dir}{kclean}/{hash_hex}.txt"
+                    row_data['filepath'] = f"{new_o_dir}/{kclean}/{hash_hex}.txt"
                 
                 metadata.loc[len(metadata)] = row_data
                 #else:
                 #print("SKIPPED")
 
 print(md5s)
-with open(f"{o_dir}md5s.pkl", "wb") as f:
+with open(f"{o_dir}/md5s.pkl", "wb") as f:
     pickle.dump(md5s, f)
 
 print(metadata)
-with open(f"{o_dir}metadata.pkl", "wb") as f:
+with open(f"{o_dir}/metadata.pkl", "wb") as f:
     pickle.dump(metadata, f)

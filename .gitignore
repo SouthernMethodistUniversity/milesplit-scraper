@@ -198,4 +198,6 @@ debug/
 text_files_*/
 data_*/
 
+scraped/
+
 .DS_Store
