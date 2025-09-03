@@ -93,16 +93,19 @@ for file in files:
                 r = requests.get(l)
                 soup = BeautifulSoup(r.content, 'html.parser')
                 tags = soup.select("pre")
-                print("\t\t", soup.select("h1.meetName")[0].get_text().strip())
-                print("\t\t", soup.select("div.date time")[0].get_text().strip())
-                print("\t\t", soup.select("div.venueName")[0].get_text().strip())
-                print("\t\t", soup.select("div.venueName a")[0].get("href").strip())
-                print("\t\t", soup.select("div.venueCity")[0].get_text().strip())
-
-                row_data['meet_name'] = soup.select("h1.meetName")[0].get_text().strip()
-                row_data['meet_date'] = soup.select("div.date time")[0].get_text().strip()
-                row_data['venue_name'] = soup.select("div.venueName")[0].get_text().strip()
-                row_data['venue_city'] = soup.select("div.venueCity")[0].get_text().strip()
+                if soup.select("h1.meetName"):
+                    print("\t\t", soup.select("h1.meetName")[0].get_text().strip())
+                    row_data['meet_name'] = soup.select("h1.meetName")[0].get_text().strip()
+                if soup.select("div.date time"):
+                    print("\t\t", soup.select("div.date time")[0].get_text().strip())
+                    row_data['meet_date'] = soup.select("div.date time")[0].get_text().strip()
+                if soup.select("div.venueName"):
+                    print("\t\t", soup.select("div.venueName")[0].get_text().strip())
+                    print("\t\t", soup.select("div.venueName a")[0].get("href").strip())
+                    row_data['venue_name'] = soup.select("div.venueName")[0].get_text().strip()
+                if soup.select("div.venueCity"):
+                    print("\t\t", soup.select("div.venueCity")[0].get_text().strip())    
+                    row_data['venue_city'] = soup.select("div.venueCity")[0].get_text().strip()
 
                 #with open(file, "w", encoding="utf-8") as f:
                 #    for tag in tags:
